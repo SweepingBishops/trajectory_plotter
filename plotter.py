@@ -11,7 +11,6 @@ pio.templates.default = "plotly_dark"
 
 INIT_POINT1 = (1,2,3)
 INIT_POINT2 = (1,2,3)
-INIT_POINT3 = (1,2,3)
 
 STEP = 0.001
 STOP = 1000.
@@ -23,7 +22,7 @@ r = 28
 start = time()
 
 trajectories = solve_multiple(
-        (INIT_POINT1, INIT_POINT2, INIT_POINT3, ),
+        (INIT_POINT1, INIT_POINT2,),
         STOP, 
         STEP,
         (σ, b, r)
@@ -31,7 +30,6 @@ trajectories = solve_multiple(
 
 end = time()
 print(f"Time taken back in python: {end-start}")
-exit()
 
 trace1 = go.Scatter3d(x=trajectories[0][0],
                       y=trajectories[0][1],
