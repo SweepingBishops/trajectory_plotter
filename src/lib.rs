@@ -1,12 +1,13 @@
-#![allow(unused)]
+#![allow(unused, mixed_script_confusables)]
 use std::time::Instant;
 use std::thread;
 use std::result::Result;
+
 use pyo3::prelude::*;
 use pyo3::types::{PyTuple, PyFloat};
 
 #[pyfunction]
-fn solve_multiple<'a>(py: Python<'a>, inits: &PyTuple, stop: &PyFloat, step: &PyFloat, params: &PyTuple) -> PyResult<&'a PyTuple> {
+fn solve_multiple<'a>(py: Python<'a>, inits: &PyTuple, stop: &PyFloat, step: &PyFloat, params: &PyTuple) -> /*Vec<[Vec<f64>;4]>*/ &'a PyTuple {
     let start = Instant::now();
     let stop: f64 = stop.extract().unwrap();
     let step: f64 = step.extract().unwrap();
@@ -22,13 +23,14 @@ fn solve_multiple<'a>(py: Python<'a>, inits: &PyTuple, stop: &PyFloat, step: &Py
     }
 
     for proc in procs {
-        let trajectory = proc.join().unwrap();
-        trajectories.push(PyTuple::new(py, trajectory));
+        trajectories.push(proc.join().unwrap());
     }
 
+    let tup = PyTuple::new(py, &trajectories);
     let duration = start.elapsed();
     println!("Time taken: {:?}", duration);
-    Ok(PyTuple::new(py, trajectories))
+    // trajectories
+    tup
 }
 
 fn runge_kutta_solve(init: (f64,f64,f64), stop: f64, step: f64, params: (f64, f64, f64)) -> [Vec<f64>; 4]  {
