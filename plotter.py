@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from lorenz_equations_plotter import solve_multiple
+from lorenz_equations_plotter import solve_multiple, mult_parameter
 
 from time import time
 
@@ -9,45 +9,85 @@ import plotly.io as pio
 
 pio.templates.default = "plotly_dark"
 
-INIT_POINT1 = (1,2,3)
-INIT_POINT2 = (1,2,3)
+
+INIT_POINTS = (
+    #(5,50,50),
+    (0,1,0),
+    #(-5,50,50),
+    #(-2.5,50,50),
+    # (1,1,1),
+    # (1,1,-1),
+    # (1,-1,1),
+    # (-1,1,1),
+    # (1,0,0),
+    # (-1,0,0),
+    # (0,1,0),
+    # (0,-1,0),
+    # (0,0,1),
+    # (0,0,-1),
+)
+
 
 STEP = 0.001
-STOP = 1000.
+STOP = 100.
 
 σ = 10
 b = 8/3
 r = 28
 
+params = (
+        (10,8/3,21),
+        (10,8/3,23),
+        (10,8/3,24),
+        (10,8/3,25),
+        (10,8/3,28),
+        )
+
+init = (0,1,0)
+
+init_iter = iter(INIT_POINTS)
+params_iter = iter(params)
+
 start = time()
 
-trajectories = solve_multiple(
-        (INIT_POINT1, INIT_POINT2,),
+# trajectories = solve_multiple(
+#         INIT_POINTS,
+#         STOP, 
+#         STEP,
+#         (σ, b, r),
+#         )
+
+trajectories = mult_parameter(
+        init,
         STOP, 
         STEP,
-        (σ, b, r)
+        params,
         )
+
 
 end = time()
 print(f"Time taken back in python: {end-start}")
 
-trace1 = go.Scatter3d(x=trajectories[0][0],
-                      y=trajectories[0][1],
-                      z=trajectories[0][2],
-                      mode="lines",
-                      name=f"{INIT_POINT1}",
-                      showlegend=True,
-                      line = dict(color="green"),
-                      )
+traces = list()
 
-trace2 = go.Scatter3d(x=trajectories[1][0],
-                      y=trajectories[1][1],
-                      z=trajectories[1][2],
-                      mode="lines",
-                      name=f"{INIT_POINT1}",
-                      showlegend=True,
-                      line = dict(color="cyan"),
-                      )
+for trajectory in trajectories:
+    traces.append(
+            go.Scatter3d(x=trajectory[0],
+                         y=trajectory[1],
+                         z=trajectory[2],
+                         mode="lines",
+                         name=f"{next(params_iter)}",
+                         showlegend=True,
+                         )
+            )
 
-fig = go.Figure(data=[trace1, trace2])
-fig.show()
+# traces.append(go.Scatter3d(x=[0,],y=[0,],z=[0,],
+#               mode="markers",
+#               name=f"Origin",
+#               showlegend=True,
+#               marker=dict(color="Green"),
+#               ))
+
+fig = go.Figure(data=traces)
+#fig.show()
+fig.write_html("plot.html")

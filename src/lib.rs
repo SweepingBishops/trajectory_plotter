@@ -1,36 +1,62 @@
-#![allow(unused, mixed_script_confusables)]
+#![allow(mixed_script_confusables)]
 use std::time::Instant;
 use std::thread;
-use std::result::Result;
 
 use pyo3::prelude::*;
 use pyo3::types::{PyTuple, PyFloat};
 
 #[pyfunction]
-fn solve_multiple<'a>(py: Python<'a>, inits: &PyTuple, stop: &PyFloat, step: &PyFloat, params: &PyTuple) -> /*Vec<[Vec<f64>;4]>*/ &'a PyTuple {
+fn solve_multiple<'a>(_py: Python<'a>, inits: &PyTuple, stop: &PyFloat, step: &PyFloat, params: &PyTuple) -> Vec<[Vec<f64>;4]> /*&'a PyTuple*/ {
     let start = Instant::now();
     let stop: f64 = stop.extract().unwrap();
     let step: f64 = step.extract().unwrap();
     let params: (f64, f64, f64) = params.extract().unwrap();
+    let inits: Vec<(f64,f64,f64)> = inits.extract().unwrap();
 
-    let mut trajectories = Vec::new();
     let mut procs = Vec::new();
 
     for init in inits {
-        let init: (f64, f64, f64) = init.extract().unwrap();
+        // let init: (f64, f64, f64) = init.extract().unwrap();
         let proc = thread::spawn(move || {runge_kutta_solve(init, stop, step, params)});
         procs.push(proc);
     }
+
+    let mut trajectories = Vec::new();
 
     for proc in procs {
         trajectories.push(proc.join().unwrap());
     }
 
-    let tup = PyTuple::new(py, &trajectories);
+    // let tup = PyTuple::new(py, &trajectories);
     let duration = start.elapsed();
     println!("Time taken: {:?}", duration);
-    // trajectories
-    tup
+    trajectories
+    // tup
+}
+
+#[pyfunction]
+fn mult_parameter<'a>(_py: Python<'a>, init: &PyTuple, stop: &PyFloat, step: &PyFloat, params: &PyTuple) -> Vec<[Vec<f64>;4]> {
+    let start = Instant::now();
+    let stop: f64 = stop.extract().unwrap();
+    let step: f64 = step.extract().unwrap();
+    let params: Vec<(f64,f64,f64)> = params.extract().unwrap();
+    let init: (f64,f64,f64) = init.extract().unwrap();
+
+    let mut procs = Vec::new();
+
+    for param in params {
+        let proc = thread::spawn(move || {runge_kutta_solve(init, stop, step, param)});
+        procs.push(proc);
+    }
+
+    let mut trajectories = Vec::new();
+
+    for proc in procs {
+        trajectories.push(proc.join().unwrap())
+    }
+    let duration = start.elapsed();
+    println!("Time taken: {:?}", duration);
+    trajectories
 }
 
 fn runge_kutta_solve(init: (f64,f64,f64), stop: f64, step: f64, params: (f64, f64, f64)) -> [Vec<f64>; 4]  {
@@ -97,5 +123,6 @@ fn add(point1: (f64, f64, f64), point2: (f64, f64, f64)) -> (f64, f64, f64) {
 #[pymodule]
 fn lorenz_equations_plotter(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(solve_multiple, m)?)?;
+    m.add_function(wrap_pyfunction!(mult_parameter, m)?)?;
     Ok(())
 }
