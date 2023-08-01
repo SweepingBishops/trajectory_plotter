@@ -15,16 +15,16 @@ INIT_POINTS = (
     (0,1,0),
     #(-5,50,50),
     #(-2.5,50,50),
-    # (1,1,1),
-    # (1,1,-1),
-    # (1,-1,1),
-    # (-1,1,1),
-    # (1,0,0),
-    # (-1,0,0),
-    # (0,1,0),
-    # (0,-1,0),
-    # (0,0,1),
-    # (0,0,-1),
+    (1,1,1),
+    (1,1,-1),
+    (1,-1,1),
+    (-1,1,1),
+    (1,0,0),
+    (-1,0,0),
+    (0,1,0),
+    (0,-1,0),
+    (0,0,1),
+    (0,0,-1),
 )
 
 
@@ -33,14 +33,18 @@ STOP = 100.
 
 σ = 10
 b = 8/3
-r = 28
+r = 24.5
 
 params = (
-        (10,8/3,21),
-        (10,8/3,23),
-        (10,8/3,24),
-        (10,8/3,25),
-        (10,8/3,28),
+        (10,8/3,14.05),
+        (10,8/3,14.0501),
+        (10,8/3,14.0502),
+        (10,8/3,14.0503),
+        (10,8/3,14.0504),
+        (10,8/3,14.0505),
+        (10,8/3,14.0506),
+        (10,8/3,14.0507),
+        (10,8/3,14.0508),
         )
 
 init = (0,1,0)
@@ -50,19 +54,19 @@ params_iter = iter(params)
 
 start = time()
 
-# trajectories = solve_multiple(
-#         INIT_POINTS,
-#         STOP, 
-#         STEP,
-#         (σ, b, r),
-#         )
-
-trajectories = mult_parameter(
-        init,
+trajectories = solve_multiple(
+        INIT_POINTS,
         STOP, 
         STEP,
-        params,
+        (σ, b, r),
         )
+
+# trajectories = mult_parameter(
+#         init,
+#         STOP, 
+#         STEP,
+#         params,
+#         )
 
 
 end = time()
@@ -76,7 +80,7 @@ for trajectory in trajectories:
                          y=trajectory[1],
                          z=trajectory[2],
                          mode="lines",
-                         name=f"{next(params_iter)}",
+                         name=f"{next(init_iter)}",
                          showlegend=True,
                          )
             )

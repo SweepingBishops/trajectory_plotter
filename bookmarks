@@ -1,0 +1,18 @@
+(σ,b,r)                 X_0                     Notes
+
+(10,8/3,23)             (2,3,5)                 intermittent chaos
+
+r<1                                             origin is globally attracting
+
+σ<1 (,8/3,10)                                   origin is stable spiral?
+
+(-0.01,8/3,10)                                  two other unstable saddle stable spiral fixed points
+
+(-2,8/3,10)               (-2.5,50,50)          ??? the line (x,0,10) is the stable manifold of smthng?
+
+
+
+----------------------------------------------
+Parameter space
+
+Homoclinic orbit at (10,8/3,~14.0508) starting from (0,1,0)
